@@ -1,4 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="com.database.*" %>
+
+
+
+<%
+  DatabaseConnection c=new DatabaseConnection();
+	Connection connector=c.getConnection();
+	out.print(connector);
+%>
  
 <!DOCTYPE html>
 <html>
@@ -14,11 +24,13 @@
 
 </head>
 <body>
-    <div class="profile-card">
-        <h2>User Profile</h2>
-        <p><strong>Name:</strong> <span id="givenName"></span></p>
+     <div class="profile-card">
+     <h2><span id="givenName"></h2>
+        <div class="avatar-container">
+            <img src="images/avatar.avif" alt="Avatar" class="avatar">
+        </div>
         <p><strong>Email:</strong> <span id="email"></span></p>
-        <p><strong>Phone:</strong> <span id="phone"></span></p>
+        <p><strong>Phone:</strong> <span id="phone"></span></p>	
     </div>
 
     <div class="register-button-container">
