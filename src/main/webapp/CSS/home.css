@@ -5,6 +5,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #f0f0f0; /* Set background color */
 }
 
 .profile-container {
@@ -15,20 +16,22 @@ body {
 }
 
 .profile-card,
-.registration-form,
-.services-list {
-    background-color: #f9f9f9;
+.services-list,
+.registration-form {
+    background-color: #fff;
     border-radius: 10px;
     padding: 20px;
     max-width: 400px;
     text-align: center;
     box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow */
 }
 
-.profile-card {
+.profile-card,
+.services-list {
     width: 100%;
-    height: 20%;
-    text-align: center; /* Center the content in the card */
+    height: auto;
+    text-align: center;
 }
 
 .avatar-container {
@@ -46,6 +49,25 @@ body {
     object-fit: cover;
 }
 
+.services-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.services-list li {
+    margin-bottom: 10px;
+}
+
+.services-list button.delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
 .registration-form input,
 .registration-form select {
     width: calc(100% - 22px);
@@ -57,23 +79,4 @@ body {
 .registration-form button {
     width: calc(100% - 22px);
     margin-top: 10px;
-}
-
-.services-list ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.services-list li {
-    margin-bottom: 10px;
-}
-
-.services-list button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    cursor: pointer;
 }
