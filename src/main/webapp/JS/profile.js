@@ -27,6 +27,10 @@ $(document).ready(function() {
                 $('#givenName').text(given_name + " " + lastname);
                 $('#email').text(email);
                 $('#phone').text(phone);
+                $('#usernameField').val(given_name);
+                document.getElementById('us').value = given_name;
+				document.getElementById('us').disabled = true;
+
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
                 console.error('Error:', errorThrown);
