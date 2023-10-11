@@ -1,72 +1,81 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"   pageEncoding="ISO-8859-1"%>
+<%@ page import="java.io.*, java.net.*, java.util.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.json.JSONObject" %>
 
 <%
-	
-		String code = request.getParameter("code");
-	
-	// Retrieve the 'session_state' parameter from the URL
-		String sessionState = request.getParameter("session_state");
-	
+// Extract the authorization code from the request parameters
+String authorizationCode = request.getParameter("code");
 
-%>
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <script type="text/javascript">
-        // Function to make a POST request
-        function makePostRequest() {
-            // Define the URL
-            var url = 'https://api.asgardeo.io/t/keerthan/oauth2/token';
+if (authorizationCode == null || authorizationCode.isEmpty()) {
+    // Handle the case where the authorization code is missing
+    out.println("Authorization code is missing.");
+} else {
+    // Define token endpoint and client credentials
+    Properties props = new Properties();
+    InputStream input = getServletContext().getResourceAsStream("/WEB-INF/authorization.properties");
+    props.load(input);
 
-            var code = encodeURIComponent('<%= code %>');
-            var sessionState = encodeURIComponent('<%= sessionState %>');
-            var client_Id = 'JM_7WpOmTfFSczq_oLOkfBHWp3oa';
-            var client_secret = 'QqiS9BbraUCEZ9UG9c_ft7HEmV4e9jbAAsO35ofrdRwa';
-            var redirect_uri = 'http://localhost:8082/VEHICLE_SERVICE_SYSTEM/authorize.jsp';
+    String clientId = props.getProperty("oauth.client_id");
+    String clientSecret = props.getProperty("oauth.client_secret");
+    String tokenEndpoint = props.getProperty("oauth.token_endpoint");
+    String redirectUri = props.getProperty("oauth.redirect_uri");
+    try {
+        // Construct the request data for token exchange
+        String requestData = "code=" + authorizationCode +
+                "&grant_type=authorization_code" +
+                "&client_id=" + clientId +
+                "&client_secret=" + clientSecret +
+                "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8");
 
-            // Define the request body parameters
-            var bodyParams = new URLSearchParams();
-            bodyParams.append('code', code);
-            bodyParams.append('grant_type', 'authorization_code');
-            bodyParams.append('client_id', client_Id);
-            bodyParams.append('client_secret', client_secret);
-            bodyParams.append('redirect_uri', redirect_uri);
+        // Create a URL object for the token endpoint
+        URL tokenUrl = new URL(tokenEndpoint);
 
-            // Define the request options
-            var requestOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: bodyParams.toString() // Convert bodyParams to a string
-            };
+        // Open a connection to the token endpoint
+        HttpURLConnection tokenConnection = (HttpURLConnection) tokenUrl.openConnection();
 
-            // Make the POST request using jQuery AJAX
-            $.ajax(url, requestOptions)
-                .done(function (data) {
-                  	// Handle the response data here
-                    console.log(data.access_token);
-                    var access_token  = data.access_token;
-                   	var id_token = data.id_token;
-                   	localStorage.setItem('access_token', access_token);
-                   	localStorage.setItem('id_token', id_token);
-            	    window.location.href = "home.jsp";
-            	    
-                })	
-                .fail(function (error) {
-                	// Handle any errors here
-                	console.error('Error:', error);
-                	window.location.href = "../index.jsp";
-                	});
+        // Set the request method to POST
+        tokenConnection.setRequestMethod("POST");
 
-                
+        // Enable input/output streams
+        tokenConnection.setDoOutput(true);
+
+        // Write the request data to the output stream
+        try (DataOutputStream tokenOutputStream = new DataOutputStream(tokenConnection.getOutputStream())) {
+            tokenOutputStream.writeBytes(requestData);
+            tokenOutputStream.flush();
         }
 
-        // Call the function to make the POST request
-        makePostRequest();
-    </script>
-</body>
-</html>
+        // Get the response code from the token endpoint
+        int tokenResponseCode = tokenConnection.getResponseCode();
+
+        // Read the response data from the token endpoint
+        try (BufferedReader tokenReader = new BufferedReader(new InputStreamReader(tokenConnection.getInputStream()))) {
+            String tokenInputLine;
+            StringBuilder tokenResponse = new StringBuilder();
+
+            while ((tokenInputLine = tokenReader.readLine()) != null) {
+                tokenResponse.append(tokenInputLine);
+            }
+
+            // Handle the response data here
+            String responseDataStr = tokenResponse.toString();
+
+            // Parse the response data as JSON
+            JSONObject jsonResponse = new JSONObject(responseDataStr);
+
+            // Extract access_token and id_token
+            String access_token = jsonResponse.getString("access_token");
+            String id_token = jsonResponse.getString("id_token");
+
+            // Store tokens in session attributes
+            request.getSession().setAttribute("access_token", access_token);
+            request.getSession().setAttribute("id_token", id_token);
+
+            response.sendRedirect("fetch.jsp");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        // Handle the exception here, e.g., by displaying an error page.
+    }
+}
+%>

@@ -1,4 +1,6 @@
+var profile_user_name;
 $(document).ready(function() {
+	
     const introspectionEndpointUrl = 'https://api.asgardeo.io/t/keerthan/oauth2/introspect';
     const accessToken = localStorage.getItem('access_token');
     const idToken = localStorage.getItem('id_token');
@@ -27,9 +29,8 @@ $(document).ready(function() {
                 $('#givenName').text(given_name + " " + lastname);
                 $('#email').text(email);
                 $('#phone').text(phone);
-                $('#usernameField').val(given_name);
-                document.getElementById('us').value = given_name;
-				document.getElementById('us').disabled = true;
+               profile_user_name=username;
+                
 
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
