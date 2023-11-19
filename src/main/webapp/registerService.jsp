@@ -11,21 +11,62 @@
     <title>Registration</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
        
         .registration-form {
+            width: 80%;
             max-width: 500px;
-            margin: 0 auto;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
+        .registration-form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .registration-form input[type="date"],
+        .registration-form select,
+        .registration-form input[type="text"],
+        .registration-form input[type="number"],
+        .registration-form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .registration-form input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .registration-form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div class="registration-form">
         <h2>Register Vehicle</h2>
-        <form action="register.jsp" method="post">
+        <form action="register" method="post">
             Date of the service reservation: <input type="date" name="reservationDate" min="" required><br>
             Preferred time: 
             <select name="preferredTime">
@@ -35,7 +76,31 @@
             </select><br>
             Preferred Location: 
             <select name="preferredLocation">
-                <!-- Options for locations -->
+                <option value="Colombo">Colombo</option>
+								<option value="Gampaga">Gampaga</option>
+								<option value="Kaluthara">Kaluthara</option>
+								<option value="Galle">Galle</option>
+								<option value="Matara">Matara</option>
+								<option value="Hambanthota">Hambanthota</option>
+								<option value="Kandy">Kandy</option>
+								<option value="Matale">Matale</option>
+								<option value="Nuwara Eliya">Nuwara Eliya</option>
+								<option value="Kegalle">Kegalle</option>
+								<option value="Ratnapura">Ratnapura</option>
+								<option value="Anuradhapura">Anuradhapura</option>
+								<option value="Polonnaruwa">Polonnaruwa</option>
+								<option value="Puttalam">Puttalam</option>
+								<option value="Kurunegala">Kurunegala</option>
+								<option value="Badulla">Badulla</option>
+								<option value="Monaragala">Monaragala</option>
+								<option value="Trincomalee">Trincomalee</option>
+								<option value="Batticaloa">Batticaloa</option>
+								<option value="Ampara">Ampara</option>
+								<option value="Jaffna">Jaffna</option>
+								<option value="Kilinochchi">Kilinochchi</option>
+								<option value="Mannar">Mannar</option>
+								<option value="Mullaitivu">Mullaitivu</option>
+								<option value="Vavuniya">Vavuniya</option>
             </select><br>
             Vehicle Registration Number: <input type="text" name="vehicleNo" required><br>
             Current Mileage: <input type="number" name="mileage" required><br>
