@@ -71,7 +71,7 @@ if (authorizationCode == null || authorizationCode.isEmpty()) {
             request.getSession().setAttribute("access_token", access_token);
             request.getSession().setAttribute("id_token", id_token);
 
-            response.sendRedirect("fetch.jsp");
+            response.sendRedirect("home.jsp");
         }
     } catch (IOException e) {
         e.printStackTrace();

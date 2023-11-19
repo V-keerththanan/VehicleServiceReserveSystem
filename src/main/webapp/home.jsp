@@ -1,114 +1,186 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="com.database.*" %>
+<%@page import="java.sql.Connection"%>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.net.URLEncoder" %>
-
-
+<%@ page import="java.net.URL, java.net.HttpURLConnection, java.io.BufferedReader, java.io.InputStreamReader" %>
+<%@ page import="java.net.URL, java.net.HttpURLConnection, java.io.BufferedReader, java.io.InputStreamReader, java.io.IOException" %>
+<%@ page import="org.json.JSONObject" %>
+<%@ page import="java.util.Iterator" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="ISO-8859-1">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/home.css">
-   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+
+    <style>
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+       
+        header nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+        }
+
+        header nav ul {
+            list-style-type: none;
+        }
+
+        header nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh; /* Adjust height as needed */
+        }
+
+        .profile-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 500px; /* Adjust maximum width as needed */
+            text-align: center; /* Center-align card content */
+        }
+
+        .avatar-container {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            border-radius: 50%;
+            margin: 0 auto 20px; /* Center the avatar and add margin */
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-profile {
+            text-align: left;
+            margin-bottom: 20px; 
+        }
+
+        .user-profile p {
+            margin-bottom: 15px;
+        }
+
+        
+        @media (max-width: 768px) {
+            .profile-card {
+                width: 80%; /* Adjust width as needed */
+            }
+        }
+    </style>
 </head>
 <body>
-	 <script src="JS/profile.js"></script>
+
+<%
+    String introspectionEndpointUrl = "https://api.asgardeo.io/t/keerthan/oauth2/introspect";
+    String accessToken = (String) session.getAttribute("access_token");
+    String idToken = (String) session.getAttribute("id_token");
+    String userName = ""; 
+    String phoneNumber ="";
+    String givenName="";
+    String lastName= "";
+    String country="";
+    if (accessToken != null && idToken != null) {
+        try {
+        	
+            URL url = new URL("https://api.asgardeo.io/t/keerthan/oauth2/userinfo");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+			
+   
+            
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+
+            in.close();
+            connection.disconnect();
+
+            String responseJSON = content.toString();
+ 
+        JSONObject jsonObject = new JSONObject(responseJSON);
+
+        userName = jsonObject.optString("username");
+        String email = jsonObject.optString("email");
+        phoneNumber = jsonObject.optString("phone_number");
+        givenName = jsonObject.optString("given_name");
+        lastName = jsonObject.optString("family_name");
+        
+        JSONObject addressObject = jsonObject.optJSONObject("address");
+
+        
+        country = (addressObject != null) ? addressObject.optString("country") : "";
+        session.setAttribute("username", userName);
+            
+            
+
+        } catch (IOException e) {
+            out.println("Error: " + e.getMessage());
+            
+        }
+    } else {
+        
+    }
+%>
+	
+<header>
+    <!-- Navigation bar -->
+    <nav>
+        <ul style="display: flex; justify-content: space-between;">
+            <li><a href="registerService.jsp">Register Service</a></li>
+            <li><a href="viewService.jsp">View Service</a></li>
+            <li><a href="logout.jsp">Log Out</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
     <div class="profile-container">
         <div class="profile-card">
-            <h2><span id="givenName"></span></h2>
+        	<h2>User Profile</h2>
             <div class="avatar-container">
+
                 <img src="images/avatar.avif" alt="Avatar" class="avatar">
             </div>
-            <p><strong>Email:</strong> <span id="email"></span></p>
-            <p><strong>Phone:</strong> <span id="phone"></span></p>
-        </div>
-
-        <div class="services-list">
-            <h2>Registered Services</h2>
-             <ul>
-        <% 
-        String obtained_username = "<script>document.write(profile_username);</script>";
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        Connection connection = dbConnection.getConnection();
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM vehicle_service WHERE username=?");
-        ps.setString(1, obtained_username);
-        ResultSet rs = ps.executeQuery();
-        %>
-        
-       <%
-	while (rs.next()) {
-    String bookingid = rs.getString(1);
-    String serviceTime = rs.getString(2).split(" ")[0]+","+ rs.getString(3); // Assuming service time is in the second column
-    String vehicleNumber = rs.getString(5); // Assuming vehicle number is in the third column
-	%>
-    <li>
-        booking-id: <%= bookingid %><br>
-        Date & Time: <%= serviceTime %><br>
-        Vehicle Number: <%= vehicleNumber %><br>
-<button class="delete-button" onclick="<%
-    ps = connection.prepareStatement("DELETE FROM vehicle_service WHERE booking_id = ?");
-    ps.setString(1, bookingid);
-    ps.executeUpdate();
-%>
-location.reload();
-">Delete</button>
-    </li>
-	<% } %>
-    </ul>
+            <div class="user-profile">
+                <p><strong>Email:</strong> <span id="email"><%= userName %></span></p>
+                <p><strong>Name:</strong> <span id="name"><%= givenName +" "+ lastName %></span></p>
+                <p><strong>Phone:</strong> <span id="phone"><%= phoneNumber %></span></p>
+                <p><strong>Country:</strong> <span id="phone"><%= country %></span></p>
+                
+            </div>
         </div>
     </div>
+</main>
 
-    <div class="registration-form">
-        <h2>Register Vehicle</h2>
-        <form action="registerService.jsp" method="post">
-            Date of the service reservation: <input type="date" name="reservationDate" min="<%=java.time.LocalDate.now()%>" required><br>
-            Preferred time: 
-            <select name="preferredTime">
-                <option value="10 AM">10 AM</option>
-                <option value="11 AM">11 AM</option>
-                <option value="12 PM">12 PM</option>
-            </select><br>
-            Preferred Location: 
-            <select name="preferredLocation">
-                <option value="Colombo">Colombo</option>
-								<option value="Gampaga">Gampaga</option>
-								<option value="Kaluthara">Kaluthara</option>
-								<option value="Galle">Galle</option>
-								<option value="Matara">Matara</option>
-								<option value="Hambanthota">Hambanthota</option>
-								<option value="Kandy">Kandy</option>
-								<option value="Matale">Matale</option>
-								<option value="Nuwara Eliya">Nuwara Eliya</option>
-								<option value="Kegalle">Kegalle</option>
-								<option value="Ratnapura">Ratnapura</option>
-								<option value="Anuradhapura">Anuradhapura</option>
-								<option value="Polonnaruwa">Polonnaruwa</option>
-								<option value="Puttalam">Puttalam</option>
-								<option value="Kurunegala">Kurunegala</option>
-								<option value="Badulla">Badulla</option>
-								<option value="Monaragala">Monaragala</option>
-								<option value="Trincomalee">Trincomalee</option>
-								<option value="Batticaloa">Batticaloa</option>
-								<option value="Ampara">Ampara</option>
-								<option value="Jaffna">Jaffna</option>
-								<option value="Kilinochchi">Kilinochchi</option>
-								<option value="Mannar">Mannar</option>
-								<option value="Mullaitivu">Mullaitivu</option>
-								<option value="Vavuniya">Vavuniya</option>
-            </select><br>
-            Vehicle Registration Number: <input type="text" name="vehicleNo" required><br>
-            Current Mileage: <input type="number" name="mileage" required><br>
-            Message: <input type="text" name="message"><br>
-            <input type="submit" name="submit" value="Register">
-        </form>
-       
-    </div>
- 
-    
-   
+<!-- Footer or additional content -->
+
 </body>
 </html>

@@ -1,108 +1,47 @@
- 
- <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="com.database.*" %>
-<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.io.PrintWriter" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Vehicle Service Center</title>
-    <link rel="stylesheet" type="text/css" href="CSS/index.css">
-    <script src="JS/index.js"></script>
-    
+    <title>Registration</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <style>
+       
+        .registration-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        
+    </style>
 </head>
 <body>
-    <%
-    if(request.getMethod().equals("POST")) {
-        String url = "jdbc:mysql://51.132.137.223:3306/isec_assessment2";
-        String username = "isec";
-        String password = "EUHHaYAmtzbv";
-        String query = "INSERT INTO vehicle_service (date, time, location, vehicle_no, mileage, message, username) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        if (request.getParameter("submit") != null) {
-            // Get form data
-            String dateString = request.getParameter("reservationDate");
-            String timeString = request.getParameter("preferredTime");
-            String location = request.getParameter("preferredLocation");
-            String mileageStr = request.getParameter("mileage");
-            int mileage = Integer.parseInt(mileageStr);
-            String vehicleNo = request.getParameter("vehicleNo");
-            String message = request.getParameter("message");
-            String obtained_username = "<script>document.write(profile_username);</script>";
-            %>
-            <script>
-    			 alert("Message: <%= obtained_username %>");
-				</script>
-             <%
-           
-            try {
-            	Connection connection = new DatabaseConnection().getConnection();
-                PreparedStatement preparedStatement;
-                // Convert date string to Date object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                java.util.Date parsedDate = dateFormat.parse(dateString);
-                java.sql.Date date = new java.sql.Date(parsedDate.getTime());
-
-                // Convert time string to Time object
-                SimpleDateFormat timeFormat = new SimpleDateFormat("hh a");
-                java.util.Date parsedTime = timeFormat.parse(timeString);
-                java.sql.Time time = new java.sql.Time(parsedTime.getTime());
-
-                preparedStatement = connection.prepareStatement(query);
-
-                // Set parameters for the prepared statement
-                preparedStatement.setDate(1, date);
-                preparedStatement.setTime(2, time);
-                preparedStatement.setString(3, location);
-                preparedStatement.setString(4, vehicleNo);
-                preparedStatement.setInt(5, mileage);
-                preparedStatement.setString(6, message);
-                preparedStatement.setString(7,obtained_username);
-
-                // Execute the SQL query
-                int rowsAffected = preparedStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    
-                	 %>
-                     <script>
-             			 alert("Registerd Success!!");
-             			window.location.href = "home.jsp";
-         				</script>
-                      <%
-                      
-                } else {
-                	 %>
-                     <script>
-             			 alert("Registerd Failure!");
-             			window.location.href = "home.jsp";
-         				</script>
-                      <%
-                    
-                }
-
-            } catch (Exception e) {
-            	e.printStackTrace();
-                String errorMessage = "An error occurred: " + e.getMessage();
-                %>
-               <script>
-       			 alert("Message: <%= errorMessage %>");
-       			window.location.href = "home.jsp";
-   				</script>
-                <%
-              
-            }
-        }
-    }
-    %>
-    
-%>
- 
-
+    <div class="registration-form">
+        <h2>Register Vehicle</h2>
+        <form action="register.jsp" method="post">
+            Date of the service reservation: <input type="date" name="reservationDate" min="" required><br>
+            Preferred time: 
+            <select name="preferredTime">
+                <option value="10 AM">10 AM</option>
+                <option value="11 AM">11 AM</option>
+                <option value="12 PM">12 PM</option>
+            </select><br>
+            Preferred Location: 
+            <select name="preferredLocation">
+                <!-- Options for locations -->
+            </select><br>
+            Vehicle Registration Number: <input type="text" name="vehicleNo" required><br>
+            Current Mileage: <input type="number" name="mileage" required><br>
+            Message: <input type="text" name="message"><br>
+            <input type="submit" name="submit" value="Register">
+        </form>
+    </div>
 </body>
 </html>
- 
- 
- 
