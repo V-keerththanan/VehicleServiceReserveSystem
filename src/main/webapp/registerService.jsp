@@ -69,13 +69,13 @@
         <form action="register" method="post">
             Date of the service reservation: <input type="date" name="reservationDate" min="" required><br>
             Preferred time: 
-            <select name="preferredTime">
+            <select name="preferredTime" required>
                 <option value="10 AM">10 AM</option>
                 <option value="11 AM">11 AM</option>
                 <option value="12 PM">12 PM</option>
             </select><br>
             Preferred Location: 
-            <select name="preferredLocation">
+            <select name="preferredLocation" required>
                 <option value="Colombo">Colombo</option>
 								<option value="Gampaga">Gampaga</option>
 								<option value="Kaluthara">Kaluthara</option>
@@ -104,7 +104,7 @@
             </select><br>
             Vehicle Registration Number: <input type="text" name="vehicleNo" required><br>
             Current Mileage: <input type="number" name="mileage" required><br>
-            Message: <input type="text" name="message"><br>
+            Message: <input type="text" name="message" required><br>
             <input type="submit" name="submit" value="Register">
         </form>
     </div>
