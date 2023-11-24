@@ -62,12 +62,35 @@
             background-color: #0056b3;
         }
     </style>
+    <script>
+        function validateForm() {
+            var selectedDate = document.getElementsByName('reservationDate')[0].value;
+            var date = new Date(selectedDate);
+            var day = date.getDay(); 
+
+            if (day === 0) { 
+                alert('Shop is closed on Sunday. Please select another date.');
+                return false; 
+            }
+            return true; 
+        }
+    </script>
 </head>
 <body>
     <div class="registration-form">
         <h2>Register Vehicle</h2>
-        <form action="register" method="post">
-            Date of the service reservation: <input type="date" name="reservationDate" min="" required><br>
+        <form action="register" method="post" onsubmit="return validateForm()">
+            Date of the service reservation: <input type="date" name="reservationDate" id="reservationDate" required><br>
+
+<script>
+  var today = new Date();
+  today.setDate(today.getDate() + 1); 
+  
+  var nextDay = today.toISOString().split('T')[0]; 
+  
+  document.getElementById('reservationDate').setAttribute('min', nextDay);
+</script>
+
             Preferred time: 
             <select name="preferredTime" required>
                 <option value="10 AM">10 AM</option>

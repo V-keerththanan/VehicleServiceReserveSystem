@@ -6,6 +6,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Record</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            background-color: yellow;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <% 
@@ -20,15 +39,21 @@
             int rowsAffected = deleteStatement.executeUpdate();
             
             if (rowsAffected > 0) {
-                out.println("<h2>Record deleted successfully.</h2>");
+                %>
+                <h2>Record deleted successfully.</h2>
+                <%
             } else {
-                out.println("<h2>Failed to delete the record.</h2>");
+                %>
+                <h2>Failed to delete the record.</h2>
+                <%
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     } else {
-        out.println("<h2>No record to delete.</h2>");
+        %>
+        <h2>No record to delete.</h2>
+        <%
     }
     
     try {
@@ -39,5 +64,6 @@
         e.printStackTrace();
     }
     %>
+    <button onclick="location.href='viewService.jsp';" class="back-btn">Back</button>
 </body>
 </html>

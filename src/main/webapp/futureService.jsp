@@ -81,11 +81,15 @@
             Connection connection = dbConnection.getConnection();
             Statement statement = null;
             ResultSet resultSet = null;
+            PreparedStatement preparedStatement=null;
             
             try {
-                String obtained_username = (String) request.getSession().getAttribute("username");
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM vehicle_service WHERE username=?");
-                preparedStatement.setString(1, obtained_username);
+            	String obtainedUsername = (String) request.getSession().getAttribute("username");
+                java.util.Date currentDate = new java.util.Date(); 
+                
+                preparedStatement = connection.prepareStatement("SELECT * FROM vehicle_service WHERE username=? AND date > ?");
+                preparedStatement.setString(1, obtainedUsername);
+                preparedStatement.setDate(2, new java.sql.Date(currentDate.getTime())); 
                 resultSet = preparedStatement.executeQuery();
                 
                 while (resultSet.next()) {
@@ -99,7 +103,7 @@
                 <td><%= resultSet.getInt("mileage") %></td>
                 <td><%= resultSet.getString("message") %></td>
                 <td>
-                    <form action="deleteRecord" method="post">
+                    <form action="delete_record.jsp" method="post">
                         <input type="hidden" name="deleteId" value="<%= resultSet.getString("booking_id") %>">
                         <button type="submit" class="delete-btn">Delete</button>
                     </form>

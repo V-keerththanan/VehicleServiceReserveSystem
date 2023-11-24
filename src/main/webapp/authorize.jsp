@@ -75,7 +75,7 @@ if (authorizationCode == null || authorizationCode.isEmpty()) {
         }
     } catch (IOException e) {
         e.printStackTrace();
-        // Handle the exception here, e.g., by displaying an error page.
+        
     }
 }
 %>

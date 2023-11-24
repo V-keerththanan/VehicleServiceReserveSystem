@@ -155,8 +155,10 @@
     <nav>
         <ul style="display: flex; justify-content: space-between;">
             <li><a href="registerService.jsp">Register Service</a></li>
-            <li><a href="viewService.jsp">View Service</a></li>
-            <li><a href="logout.jsp">Log Out</a></li>
+            <li><a href="allService.jsp">All Reservation</a></li>
+            <li><a href="futureService.jsp">Future Reservation</a></li>
+            <li><a href="https://api.asgardeo.io/t/keerthan/oidc/logout" id="logout-link">Log Out</a></li>
+
         </ul>
     </nav>
 </header>
